@@ -61,12 +61,52 @@ def metrics_section(df: pl.DataFrame, period_selection: datetime):
     total_gross_profit_delta = selected_total_gross_profit - prior_total_gross_profit
     total_net_profit_delta = selected_total_net_profit - prior_total_net_profit
 
-    metrics_container = center.container(border=True, horizontal=True)
-    col1, col2, col3 = metrics_container.columns(3)
-    col1.metric(label="Revenue", value=f"${format_metric(selected_total_revenue)}", delta=millify(total_revenue_delta))
-    col2.metric(label="Gross Profit", value=f"${format_metric(selected_total_gross_profit)}", delta=millify(total_gross_profit_delta))
-    col3.metric(label="Net Profit", value=f"${format_metric(selected_total_net_profit)}", delta=millify(total_net_profit_delta))
+    # Display primary metrics
+    metrics_container = center.container()
+    metric1, metric2, metric3 = metrics_container.columns(3)
+    metric1.metric(
+        label="Revenue", 
+        value=f"${format_metric(selected_total_revenue)}", 
+        delta=millify(total_revenue_delta), 
+        border=True
+    )
+    metric2.metric(
+        label="Gross profit", 
+        value=f"${format_metric(selected_total_gross_profit)}", 
+        delta=millify(total_gross_profit_delta), 
+        border=True
+    
+    )
+    metric3.metric(label="Net profit",
+        value=f"${format_metric(selected_total_net_profit)}",
+        delta=millify(total_net_profit_delta),
+        border=True
+    )
 
+    # Calculate secondary metrics
+    selected_gross_profit_ratio = selected_total_gross_profit / selected_total_revenue
+    prior_gross_profit_ratio = prior_total_gross_profit / prior_total_revenue if prior_total_revenue > 0 else 0
+    gross_profit_ratio_delta = selected_gross_profit_ratio - prior_gross_profit_ratio
+
+    selected_operating_expense_ratio = selected_total_operating_expenses / selected_total_revenue
+    prior_operating_expense_ratio = prior_total_operating_expenses / prior_total_revenue if prior_total_revenue > 0 else 0
+    operating_expense_ratio_delta = selected_operating_expense_ratio - prior_operating_expense_ratio
+
+    # Display secondary metrics
+    metric4, metric5, metric6 = metrics_container.columns(3)
+    metric4.metric(
+        label="Gross profit ratio",
+        value=f"{selected_gross_profit_ratio:.1%}", 
+        delta=f"{gross_profit_ratio_delta:.1%}", 
+        border=True
+    )
+    metric5.metric(
+        label="Operating expense ratio", 
+        value=f"{selected_operating_expense_ratio:.1%}", 
+        delta=f"{operating_expense_ratio_delta:.1%}", 
+        delta_color="inverse", 
+        border=True
+    )
 
 
 # =======================
