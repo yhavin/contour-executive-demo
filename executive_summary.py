@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import streamlit as st
 import polars as pl
@@ -24,31 +24,48 @@ def calculate_category_total(df: pl.DataFrame, category: str, value_column: str=
 
 
 def format_metric(value) -> str:
-    if value >= 1000000:
+    if abs(value) >= 1000000:
         return millify(value, precision=2, drop_nulls=False)
-    elif value >= 1000:
+    elif abs(value) >= 1000:
         return millify(value, precision=0)
     else:
         return str(value)
 
 
-def metrics_section(df: pl.DataFrame, from_period_selection: datetime, to_period_selection: datetime):
-    df = df.filter((pl.col("period") >= from_period_selection) & (pl.col("period") <= to_period_selection))
+def metrics_section(df: pl.DataFrame, period_selection: datetime):
+    selected_df = df.filter(pl.col("period") == period_selection)
 
-    # Sum each category
-    total_revenue = calculate_category_total(df, FinancialCategory.REVENUE.value)
-    total_cost_of_goods_sold = calculate_category_total(df, FinancialCategory.COST_OF_GOODS_SOLD.value)
-    total_operating_expenses = calculate_category_total(df, FinancialCategory.OPERATING_EXPENSES.value)
+    prior_period = (period_selection.replace(day=1) - timedelta(days=1)).replace(day=1)
+    prior_df = df.filter(pl.col("period") == prior_period)
 
-    # Create subtotals
-    total_gross_profit = total_revenue - total_cost_of_goods_sold
-    total_net_profit = total_gross_profit - total_operating_expenses
+    # Sum each category for selected period
+    selected_total_revenue = calculate_category_total(selected_df, FinancialCategory.REVENUE.value)
+    selected_total_cost_of_goods_sold = calculate_category_total(selected_df, FinancialCategory.COST_OF_GOODS_SOLD.value)
+    selected_total_operating_expenses = calculate_category_total(selected_df, FinancialCategory.OPERATING_EXPENSES.value)
+
+    # Sum each category for prior period
+    prior_total_revenue = calculate_category_total(prior_df, FinancialCategory.REVENUE.value)
+    prior_total_cost_of_goods_sold = calculate_category_total(prior_df, FinancialCategory.COST_OF_GOODS_SOLD.value)
+    prior_total_operating_expenses = calculate_category_total(prior_df, FinancialCategory.OPERATING_EXPENSES.value)
+
+    # Create subtotals for selected period
+    selected_total_gross_profit = selected_total_revenue - selected_total_cost_of_goods_sold
+    selected_total_net_profit = selected_total_gross_profit - selected_total_operating_expenses
+
+    # Create subtotals for prior period
+    prior_total_gross_profit = prior_total_revenue - prior_total_cost_of_goods_sold
+    prior_total_net_profit = prior_total_gross_profit - prior_total_operating_expenses
+
+    # Calculate deltas
+    total_revenue_delta = selected_total_revenue - prior_total_revenue
+    total_gross_profit_delta = selected_total_gross_profit - prior_total_gross_profit
+    total_net_profit_delta = selected_total_net_profit - prior_total_net_profit
 
     metrics_container = center.container(border=True, horizontal=True)
     col1, col2, col3 = metrics_container.columns(3)
-    col1.metric(label="Revenue", value=f"${format_metric(total_revenue)}")
-    col2.metric(label="Gross Profit", value=f"${format_metric(total_gross_profit)}")
-    col3.metric(label="Net Profit", value=f"${format_metric(total_net_profit)}")
+    col1.metric(label="Revenue", value=f"${format_metric(selected_total_revenue)}", delta=millify(total_revenue_delta))
+    col2.metric(label="Gross Profit", value=f"${format_metric(selected_total_gross_profit)}", delta=millify(total_gross_profit_delta))
+    col3.metric(label="Net Profit", value=f"${format_metric(selected_total_net_profit)}", delta=millify(total_net_profit_delta))
 
 
 
@@ -59,18 +76,18 @@ st.set_page_config(
     page_title="Executive summary | Executive Portal",
     layout="wide"
 )
-left, center, right = st.columns([1, 5, 1])
+left, center, right = st.columns([1, 3.5, 1])
 center.header(":material/dashboard: Executive summary")
 left_center, center_center, right_center = center.columns(3)
 
 df = fetch_data()
 
 period_options = df["period"].unique().to_list()
-from_period_selection, to_period_selection = left_center.select_slider(
-    label="Date range",
-    options=period_options,
-    value=(period_options[0], period_options[-1]),
+period_selection = left_center.selectbox(
+    label="Period",
+    options=reversed(period_options),
+    index=0,
     format_func=lambda x: datetime.strftime(x, "%B %Y")
 )
 
-metrics_section(df, from_period_selection, to_period_selection)
+metrics_section(df, period_selection)
