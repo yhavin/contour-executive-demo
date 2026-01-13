@@ -1,0 +1,19 @@
+[browser]
+gatherUsageStats = false
+
+[server]
+enableStaticServing = true
+maxUploadSize = 50
+
+[[theme.fontFaces]]
+family="inter"
+url="app/static/Inter-VariableFont_opsz,wght.ttf"
+style="normal"
+
+[theme]
+primaryColor="#009999"
+backgroundColor="white"
+textColor="#31333f"
+secondaryBackgroundColor="#f0f2f6"
+headingFont="inter"
+baseRadius="0.7rem"
