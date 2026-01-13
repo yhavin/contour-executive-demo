@@ -48,7 +48,7 @@ login_page = st.Page(
 )
 executive_summary_page = st.Page(
     page="executive_summary.py",
-    title="Executive Summary",
+    title="Executive summary",
     url_path="executive-summary",
     icon=":material/dashboard:"
 )
