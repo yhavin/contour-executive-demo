@@ -5,7 +5,7 @@ import polars as pl
 from millify import millify
 
 import utils
-from enums import FinancialCategory
+from constants import FinancialCategory
 
 
 # =======================
