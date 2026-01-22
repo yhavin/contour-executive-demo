@@ -14,6 +14,14 @@ class FinancialCategory(Enum):
     OPERATING_EXPENSES = "Operating Expenses"
 
 
+class IncomeStatementCategory(Enum):
+    TOTAL_REVENUE = "Total Revenue"
+    TOTAL_COST_OF_GOODS_SOLD = "Total Cost of Goods Sold"
+    GROSS_PROFIT = "Gross Profit"
+    TOTAL_OPERATING_EXPENSES = "Total Operating Expenses"
+    NET_PROFIT = "Net Profit"
+
+
 class Metric(Enum):
     REVENUE = "Revenue"
     GROSS_PROFIT = "Gross Profit"
