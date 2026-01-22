@@ -16,6 +16,12 @@ class IncomeStatementCategory(Enum):
     NET_PROFIT = "Net Profit"
 
 
+class BalanceSheetCategory(Enum):
+    TOTAL_ASSETS = "Total Assets"
+    TOTAL_LIABILITIES = "Total Liabilities"
+    TOTAL_EQUITY = "Total Equity"
+
+
 class Metric(Enum):
     REVENUE = "Revenue"
     GROSS_PROFIT = "Gross Profit"

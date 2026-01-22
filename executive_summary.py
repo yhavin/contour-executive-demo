@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 import streamlit as st
 import polars as pl
@@ -149,3 +150,5 @@ period_selection = left_center.selectbox(
 )
 
 metrics_section(df, period_selection)
+
+center.badge(f"Latest data: {datetime.now(tz=ZoneInfo("America/New_York")):%B %e, %Y}", color="grey")

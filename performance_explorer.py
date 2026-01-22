@@ -1,4 +1,5 @@
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import streamlit as st
 import polars as pl
@@ -125,3 +126,5 @@ metric_selection = left_center.selectbox(
 left_center.caption(body=METRIC_CONSTANTS[metric_selection]["caption"])
 
 performance_explorer_section(df, metric_selection, from_period_selection, to_period_selection)
+
+center.badge(f"Latest data: {datetime.now(tz=ZoneInfo("America/New_York")):%B %e, %Y}", color="grey")
