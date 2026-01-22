@@ -185,8 +185,8 @@ center.header(":material/article: Financial statements")
 df = fetch_data()
 
 financial_statement_selection = center.pills(
-    label="Statement type",
-    options=["Income Statement", "Balance Sheet", "Cash Flow Statement"],
+    label="Statement",
+    options=["Income Statement", "Balance Sheet"],
     default="Income Statement"
 )
 
