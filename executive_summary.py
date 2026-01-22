@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 
 import streamlit as st
 import polars as pl
-from millify import millify
 
 import utils
 from constants import FinancialCategory
@@ -53,20 +52,23 @@ def metrics_section(df: pl.DataFrame, period_selection: datetime):
     metric1, metric2, metric3 = metrics_container.columns(3)
     metric1.metric(
         label="Revenue", 
-        value=f"${utils.format_metric(selected_total_revenue)}", 
-        delta=millify(total_revenue_delta), 
+        value=selected_total_revenue, 
+        delta=total_revenue_delta, 
+        format="compact",
         border=True
     )
     metric2.metric(
         label="Gross profit", 
-        value=f"${utils.format_metric(selected_total_gross_profit)}", 
-        delta=millify(total_gross_profit_delta), 
+        value=selected_total_gross_profit, 
+        delta=total_gross_profit_delta,
+        format="compact",
         border=True
     
     )
     metric3.metric(label="Net profit",
-        value=f"${utils.format_metric(selected_total_net_profit)}",
-        delta=millify(total_net_profit_delta),
+        value=selected_total_net_profit,
+        delta=total_net_profit_delta,
+        format="compact",
         border=True
     )
 
@@ -83,15 +85,17 @@ def metrics_section(df: pl.DataFrame, period_selection: datetime):
     metric4, metric5, metric6 = metrics_container.columns(3)
     metric4.metric(
         label="Gross profit ratio",
-        value=f"{selected_gross_profit_ratio:.1%}", 
-        delta=f"{gross_profit_ratio_delta:.1%}", 
+        value=selected_gross_profit_ratio * 100, 
+        delta=gross_profit_ratio_delta * 100,
+        format="%.1f%%",
         border=True
     )
     metric5.metric(
         label="Operating expense ratio", 
-        value=f"{selected_operating_expense_ratio:.1%}", 
-        delta=f"{operating_expense_ratio_delta:.1%}", 
+        value=selected_operating_expense_ratio * 100, 
+        delta=operating_expense_ratio_delta * 100, 
         delta_color="inverse", 
+        format="%.1f%%",
         border=True
     )
 
